@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>منظم المهام النهائي</title>
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="./manifest.json">
     <style>
         body {
             font-family: Arial;
@@ -31,7 +31,6 @@
             border-radius: 5px;
         }
 
-        /* ألوان الأزرار */
         #loginBox button {
             background-color: #16a34a;
             color: white;
@@ -47,7 +46,6 @@
             color: white;
         }
 
-        /* عناصر المهمة */
         li {
             position: relative;
             margin: 10px auto;
@@ -122,7 +120,6 @@
     <div class="container" style="display:none;">
         <h1>📚 منظم المهام</h1>
 
-        <!-- إضافة المهمة -->
         <input type="text" id="taskInput" placeholder="اكتب مهمتك">
         <select id="taskPriority">
             <option value="green">سهلة</option>
@@ -138,7 +135,6 @@
         <button id="addBtn" onclick="addTask()">إضافة</button>
         <button id="logoutBtn" onclick="logout()">خروج</button>
 
-        <!-- فلترة -->
         <br>
         <select id="filterPriority" onchange="applyFilterAndSearch()">
             <option value="all">كل الصعوبات</option>
@@ -153,17 +149,15 @@
             <option value="personal">شخصي</option>
         </select>
 
-        <!-- البحث بالكلمة المفتاحية -->
         <br>
         <input type="text" id="searchInput" placeholder="ابحث عن مهمة..." onkeyup="applyFilterAndSearch()">
 
-        <!-- زر تصدير PDF -->
         <br>
         <button onclick="exportTasksToPDF()" style="background:#3b82f6;color:white;margin-top:10px;">📄 تصدير المهام كـ
             PDF</button>
 
         <ul id="taskList"></ul>
-        <audio id="alarmSound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
+        <audio id="alarmSound" src="./beep-07.wav" preload="auto"></audio>
     </div>
 
     <script>
@@ -369,14 +363,20 @@
             printWindow.print();
         }
 
-        
+        // تسجيل Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js').then(() => console.log("SW Registered"));
+        }
     </script>
-  <script>
-if ('serviceWorker' in navigator) {
-navigator.serviceWorker.register('sw.js')    .then(() => console.log("SW Registered"));
-}
-</script>
-    
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('SW Registered:', reg))
+                    .catch(err => console.log('SW Registration Failed:', err));
+            });
+        }
+    </script>
 </body>
 
 </html>
