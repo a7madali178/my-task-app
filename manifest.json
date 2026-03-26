@@ -1,24 +1,21 @@
 {
-    "id": "/",
     "name": "The Best",
     "short_name": "Tasks",
     "description": "تطبيق لتنظيم المهام اليومية بسهولة",
-    "start_url": "/",
+    "start_url": "./",
     "display": "standalone",
     "orientation": "portrait",
     "background_color": "#0f172a",
     "theme_color": "#22c55e",
     "icons": [
         {
-            "src": "icon.png",
-            "sizes": "1024x1024",
+            "src": "./icon-192.png",
+            "sizes": "192x192",
             "type": "image/png"
-        }
-    ],
-    "screenshots": [
+        },
         {
-            "src": "screenshot1.png",
-             "sizes": "1920x1080",
+            "src": "./icon-512.png",
+            "sizes": "512x512",
             "type": "image/png"
         }
     ],
@@ -26,11 +23,11 @@
         {
             "name": "إضافة مهمة",
             "short_name": "إضافة",
-            "url": "/",
+            "url": "./",
             "icons": [
                 {
-                    "src": "icon.png",
-                    "sizes": "1024x1024"
+                    "src": "./icon-192.png",
+                    "sizes": "192x192"
                 }
             ]
         }
