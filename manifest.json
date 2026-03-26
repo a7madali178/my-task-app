@@ -1,4 +1,5 @@
 {
+    "id": "task-app-best-001",
     "name": "The Best",
     "short_name": "Tasks",
     "description": "تطبيق لتنظيم المهام اليومية بسهولة",
@@ -21,7 +22,7 @@
     ],
     "screenshots": [
         {
-            "src": "screenshot1.png",
+            "src": "./screenshot1.png",
             "sizes": "825x458",
             "type": "image/png"
         }
@@ -34,7 +35,8 @@
             "icons": [
                 {
                     "src": "./icon-192.png",
-                    "sizes": "192x192"
+                    "sizes": "192x192",
+                    "type": "image/png"
                 }
             ]
         }
