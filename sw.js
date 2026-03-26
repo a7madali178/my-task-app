@@ -29,3 +29,9 @@ self.addEventListener('fetch', (event) => {
     caches.match(event.request).then(response => response || fetch(event.request))
   );
 });
+self.addEventListener('install', e => {
+  console.log('Service Worker Installed');
+});
+
+self.addEventListener('fetch', e => {
+});
