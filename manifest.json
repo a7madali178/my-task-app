@@ -55,7 +55,7 @@
             "src": "./screenshot-wide2.png",
             "sizes": "2340x1080",
             "type": "image/png"
-        },
+        }
     ],
     "shortcuts": [
         {
