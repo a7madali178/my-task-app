@@ -1,41 +1,31 @@
-// sw.js
-const cacheName = "task-app-v1";
-const assetsToCache = [
-    "/",
-    "/index.html",
-    "/icon.png",
-    "/screenshot1.png",
-    // أي ملفات CSS أو JS عندك
+
+const CACHE_NAME = 'task-app-cache-v1';
+
+const urlsToCache = [
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/icon.png',
+  '/screenshot1.png',
+  
 ];
 
-// أثناء التثبيت، خزّن الملفات
-self.addEventListener("install", event => {
-    event.waitUntil(
-        caches.open(cacheName).then(cache => {
-            return cache.addAll(assetsToCache);
-        })
-    );
-    self.skipWaiting();
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
+  );
 });
 
-// أثناء تفعيل Service Worker، حذف الكاش القديم
-self.addEventListener("activate", event => {
-    event.waitUntil(
-        caches.keys().then(keys => {
-            return Promise.all(
-                keys
-                    .filter(key => key !== cacheName)
-                    .map(key => caches.delete(key))
-            );
-        })
-    );
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key)))
+    )
+  );
 });
 
-// استجابة الملفات من الكاش أو من الإنترنت
-self.addEventListener("fetch", event => {
-    event.respondWith(
-        caches.match(event.request).then(cachedRes => {
-            return cachedRes || fetch(event.request);
-        })
-    );
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request).then(response => response || fetch(event.request))
+  );
 });
