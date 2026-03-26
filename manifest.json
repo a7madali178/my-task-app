@@ -39,22 +39,26 @@
         {
             "src": "./screenshot-wide.png",
             "sizes": "1920x1080",
-            "type": "image/png"
+            "type": "image/png",
+            "form_factor": "wide"
         },
         {
             "src": "./screenshot-narrow.png",
             "sizes": "905x1080",
-            "type": "image/png"
+            "type": "image/png",
+            "form_factor": "narrow"
         },
         {
-            "src": "./screenshot-narrow(1).png",
+            "src": "./screenshot-narrow1.png",
             "sizes": "720x1280",
-            "type": "image/png"
+            "type": "image/png",
+            "form_factor": "narrow"
         },
         {
             "src": "./screenshot-wide2.png",
             "sizes": "2340x1080",
-            "type": "image/png"
+            "type": "image/png",
+            "form_factor": "wide"
         }
     ],
     "shortcuts": [
