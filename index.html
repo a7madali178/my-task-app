@@ -369,57 +369,9 @@
             printWindow.print();
         }
 
-        const CACHE_NAME = 'task-app-cache-v1';
-        const urlsToCache = [
-            '/',
-            '/index.html',
-            '/manifest.json',
-            '/icon.png',
-            '/screenshot1.png',
-            '/style.css',    // لو عندك CSS
-            '/app.js'        // لو عندك JS
-        ];
-
-        // تثبيت Service Worker وحفظ الملفات في الكاش
-        self.addEventListener('install', (event) => {
-            event.waitUntil(
-                caches.open(CACHE_NAME)
-                    .then((cache) => {
-                        return cache.addAll(urlsToCache);
-                    })
-            );
-        });
-
-        // تفعيل Service Worker وتنظيف الكاش القديم
-        self.addEventListener('activate', (event) => {
-            event.waitUntil(
-                caches.keys().then((cacheNames) => {
-                    return Promise.all(
-                        cacheNames.filter((name) => name !== CACHE_NAME)
-                            .map((name) => caches.delete(name))
-                    );
-                })
-            );
-        });
-
-        // اعتراض الطلبات واستخدام الكاش لو Offline
-        self.addEventListener('fetch', (event) => {
-            event.respondWith(
-                caches.match(event.request)
-                    .then((response) => {
-                        return response || fetch(event.request);
-                    })
-            );
-        });
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then((reg) => console.log('SW registered: ', reg))
-                    .catch((err) => console.log('SW registration failed: ', err));
-            });
-        }
+        
     </script>
-
+    
 </body>
 
 </html>
