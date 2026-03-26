@@ -83,7 +83,6 @@
         }
     ],
     "prefer_related_applications": false,
-    "iarc_rating_id": "e10",
     "file_handlers": [
         {
             "action": "./open-file",
