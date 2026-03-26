@@ -8,6 +8,7 @@
     "orientation": "portrait",
     "background_color": "#0f172a",
     "theme_color": "#22c55e",
+    "categories": ["productivity"],
     "icons": [
         {
             "src": "./icon-192.png",
@@ -23,7 +24,7 @@
     "screenshots": [
         {
             "src": "./screenshot1.png",
-            "sizes": "825x458",
+            "sizes": "1920×1080",
             "type": "image/png"
         }
     ],
@@ -40,5 +41,13 @@
                 }
             ]
         }
-    ]
+    ],
+    "related_applications": [
+        {
+            "platform": "play",
+            "id": "com.ahmedali.taskapp",
+            "url": "https://play.google.com/store/apps/details?id=com.ahmedali.taskapp"
+        }
+    ],
+    "prefer_related_applications": false
 }
