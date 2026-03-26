@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <title>منظم المهام النهائي</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        body {
+            font-family: Arial;
+            background: #0f172a;
+            color: white;
+            text-align: center;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        input,
+        select {
+            padding: 10px;
+            width: 150px;
+            margin-right: 5px;
+        }
+
+        button {
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        /* ألوان الأزرار */
+        #loginBox button {
+            background-color: #16a34a;
+            color: white;
+        }
+
+        #addBtn {
+            background-color: #22c55e;
+            color: white;
+        }
+
+        #logoutBtn {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        /* عناصر المهمة */
+        li {
+            position: relative;
+            margin: 10px auto;
+            background: #1e293b;
+            padding: 10px 10px 10px 40px;
+            list-style: none;
+            width: 300px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 10px;
+        }
+
+        .priority-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .task-timer {
+            margin-left: 10px;
+            color: #facc15;
+            font-size: 14px;
+        }
+
+        .project-label {
+            font-size: 12px;
+            margin-right: 5px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: white;
+        }
+
+        .project-work {
+            background: #3b82f6;
+        }
+
+        .project-study {
+            background: #f97316;
+        }
+
+        .project-personal {
+            background: #10b981;
+        }
+
+        select {
+            background: #3b82f6;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        #searchInput {
+            padding: 10px;
+            width: 310px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="loginBox">
+        <h2>👤 ادخل اسمك</h2>
+        <input type="text" id="username" placeholder="اسمك">
+        <button onclick="login()">دخول</button>
+    </div>
+
+    <div class="container" style="display:none;">
+        <h1>📚 منظم المهام</h1>
+
+        <!-- إضافة المهمة -->
+        <input type="text" id="taskInput" placeholder="اكتب مهمتك">
+        <select id="taskPriority">
+            <option value="green">سهلة</option>
+            <option value="yellow">متوسطة</option>
+            <option value="red">صعبة</option>
+        </select>
+        <select id="taskProject">
+            <option value="work">شغل</option>
+            <option value="study">دراسة</option>
+            <option value="personal">شخصي</option>
+        </select>
+        <input type="time" id="taskTime">
+        <button id="addBtn" onclick="addTask()">إضافة</button>
+        <button id="logoutBtn" onclick="logout()">خروج</button>
+
+        <!-- فلترة -->
+        <br>
+        <select id="filterPriority" onchange="applyFilterAndSearch()">
+            <option value="all">كل الصعوبات</option>
+            <option value="green">سهلة</option>
+            <option value="yellow">متوسطة</option>
+            <option value="red">صعبة</option>
+        </select>
+        <select id="filterProject" onchange="applyFilterAndSearch()">
+            <option value="all">كل المشاريع</option>
+            <option value="work">شغل</option>
+            <option value="study">دراسة</option>
+            <option value="personal">شخصي</option>
+        </select>
+
+        <!-- البحث بالكلمة المفتاحية -->
+        <br>
+        <input type="text" id="searchInput" placeholder="ابحث عن مهمة..." onkeyup="applyFilterAndSearch()">
+
+        <!-- زر تصدير PDF -->
+        <br>
+        <button onclick="exportTasksToPDF()" style="background:#3b82f6;color:white;margin-top:10px;">📄 تصدير المهام كـ
+            PDF</button>
+
+        <ul id="taskList"></ul>
+        <audio id="alarmSound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
+    </div>
+
+    <script>
+        let currentUser = "";
+        if ("Notification" in window) Notification.requestPermission();
+
+        window.onload = function () {
+            const savedUser = localStorage.getItem("currentUser");
+            if (savedUser) {
+                currentUser = savedUser;
+                document.getElementById("loginBox").style.display = "none";
+                document.querySelector(".container").style.display = "block";
+                loadTasks();
+                startDailyNotificationChecker();
+            }
+        }
+
+        function login() {
+            const name = document.getElementById("username").value.trim();
+            if (!name) return;
+            currentUser = name;
+            localStorage.setItem("currentUser", currentUser);
+            document.getElementById("loginBox").style.display = "none";
+            document.querySelector(".container").style.display = "block";
+            loadTasks();
+            startDailyNotificationChecker();
+        }
+
+        function loadTasks() {
+            const tasks = JSON.parse(localStorage.getItem(currentUser)) || [];
+            const list = document.getElementById("taskList");
+            list.innerHTML = "";
+            tasks.forEach(task => createTaskElement(task.text, task.completed, task.priority, task.time, task.project));
+        }
+
+        function addTask() {
+            const input = document.getElementById("taskInput");
+            const taskText = input.value.trim();
+            if (!taskText) return;
+            const priority = document.getElementById("taskPriority").value;
+            const time = document.getElementById("taskTime").value;
+            const project = document.getElementById("taskProject").value;
+            createTaskElement(taskText, false, priority, time, project);
+            saveTask(taskText, false, priority, time, project);
+            input.value = "";
+            document.getElementById("taskTime").value = "";
+            applyFilterAndSearch();
+        }
+
+        function createTaskElement(taskText, completed, priority, time, project) {
+            const li = document.createElement("li");
+            li.draggable = true;
+
+            const icon = document.createElement("div");
+            icon.className = "priority-icon";
+            icon.style.background = priority;
+            li.appendChild(icon);
+
+            const span = document.createElement("span");
+            span.textContent = taskText;
+            span.style.color = completed ? "gray" : "white";
+            span.style.flex = "1";
+            span.style.cursor = "pointer";
+            span.onclick = function () {
+                completed = !completed;
+                span.style.color = completed ? "gray" : "white";
+                span.style.textDecoration = completed ? "line-through" : "none";
+                updateTask(taskText, completed, priority, time, project);
+            }
+
+            const projectLabel = document.createElement("span");
+            projectLabel.className = "project-label";
+            if (project === "work") projectLabel.classList.add("project-work");
+            if (project === "study") projectLabel.classList.add("project-study");
+            if (project === "personal") projectLabel.classList.add("project-personal");
+            projectLabel.textContent = project;
+
+            const timerSpan = document.createElement("span");
+            timerSpan.className = "task-timer";
+            timerSpan.textContent = time ? remainingTimeText(time) : "";
+
+            const deleteBtn = document.createElement("button");
+            deleteBtn.textContent = "حذف";
+            deleteBtn.style.marginLeft = "10px";
+            deleteBtn.style.background = "red";
+            deleteBtn.onclick = function () { li.remove(); deleteTask(taskText); }
+
+            li.appendChild(projectLabel);
+            li.appendChild(span);
+            li.appendChild(timerSpan);
+            li.appendChild(deleteBtn);
+            document.getElementById("taskList").appendChild(li);
+        }
+
+        function remainingTimeText(time) {
+            const now = new Date();
+            const [hours, minutes] = time.split(":").map(Number);
+            let target = new Date();
+            target.setHours(hours, minutes, 0, 0);
+            let diff = target - now;
+            if (diff <= 0) return "الوقت وصل!";
+            let m = Math.floor(diff / 60000);
+            let s = Math.floor((diff % 60000) / 1000);
+            return `${m} د ${s} ث`;
+        }
+
+        function saveTask(taskText, completed, priority, time, project) {
+            if (!currentUser) return;
+            const tasks = JSON.parse(localStorage.getItem(currentUser)) || [];
+            tasks.push({ text: taskText, completed, priority, time, project });
+            localStorage.setItem(currentUser, JSON.stringify(tasks));
+        }
+
+        function deleteTask(taskText) {
+            if (!currentUser) return;
+            let tasks = JSON.parse(localStorage.getItem(currentUser)) || [];
+            tasks = tasks.filter(t => t.text !== taskText);
+            localStorage.setItem(currentUser, JSON.stringify(tasks));
+        }
+
+        function updateTask(taskText, completed, priority, time, project) {
+            if (!currentUser) return;
+            let tasks = JSON.parse(localStorage.getItem(currentUser)) || [];
+            tasks = tasks.map(t => { if (t.text === taskText) { t.completed = completed; t.priority = priority; t.time = time; t.project = project; } return t; });
+            localStorage.setItem(currentUser, JSON.stringify(tasks));
+        }
+
+        function logout() {
+            currentUser = "";
+            localStorage.removeItem("currentUser");
+            document.getElementById("loginBox").style.display = "block";
+            document.querySelector(".container").style.display = "none";
+        }
+
+        function startDailyNotificationChecker() {
+            const alarm = document.getElementById("alarmSound");
+            setInterval(() => {
+                if (!currentUser) return;
+                const now = new Date();
+                const tasks = JSON.parse(localStorage.getItem(currentUser)) || [];
+                tasks.forEach(task => {
+                    if (task.time) {
+                        const [hours, minutes] = task.time.split(":").map(Number);
+                        if (hours === now.getHours() && minutes === now.getMinutes()) {
+                            if (Notification.permission === "granted") {
+                                new Notification("⏰ تذكير يومي بالمهمة", { body: task.text });
+                                alarm.play();
+                            }
+                        }
+                    }
+                });
+                updateTimers();
+            }, 60000);
+        }
+
+        function updateTimers() {
+            const tasks = JSON.parse(localStorage.getItem(currentUser)) || [];
+            const timerSpans = document.querySelectorAll(".task-timer");
+            timerSpans.forEach((span, index) => {
+                const task = tasks[index];
+                if (task.time && !task.completed) span.textContent = remainingTimeText(task.time);
+                else span.textContent = "";
+            });
+        }
+
+        function applyFilterAndSearch() {
+            const filterPriority = document.getElementById("filterPriority").value;
+            const filterProject = document.getElementById("filterProject").value;
+            const searchText = document.getElementById("searchInput").value.toLowerCase();
+            const tasks = JSON.parse(localStorage.getItem(currentUser)) || [];
+            document.getElementById("taskList").innerHTML = "";
+            tasks.forEach(task => {
+                const matchesFilter = (filterPriority === "all" || task.priority === filterPriority) &&
+                    (filterProject === "all" || task.project === filterProject);
+                const matchesSearch = task.text.toLowerCase().includes(searchText);
+                if (matchesFilter && matchesSearch) {
+                    createTaskElement(task.text, task.completed, task.priority, task.time, task.project);
+                }
+            });
+        }
+
+        function exportTasksToPDF() {
+            const tasks = JSON.parse(localStorage.getItem(currentUser)) || [];
+            if (tasks.length === 0) { alert("لا توجد مهام للتصدير"); return; }
+
+            let docContent = `<h1>مهام المستخدم: ${currentUser}</h1><ul>`;
+            tasks.forEach(task => {
+                docContent += `<li>
+            المهمة: ${task.text} <br>
+            المشروع: ${task.project} <br>
+            الصعوبة: ${task.priority} <br>
+            الوقت: ${task.time || 'غير محدد'} <br>
+            الحالة: ${task.completed ? 'مكتملة ✔️' : 'غير مكتملة ❌'}
+        </li><br>`;
+            });
+            docContent += "</ul>";
+
+            const printWindow = window.open('', '', 'height=600,width=800');
+            printWindow.document.write('<html><head><title>مهام PDF</title></head><body>');
+            printWindow.document.write(docContent);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.print();
+        }
+    </script>
+</body>
+
+</html>
