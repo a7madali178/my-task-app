@@ -8,9 +8,7 @@
     "orientation": "portrait",
     "background_color": "#0f172a",
     "theme_color": "#22c55e",
-    "categories": [
-        "productivity"
-    ],
+    "categories": ["productivity"],
     "icons": [
         {
             "src": "./icon-192.png",
@@ -31,7 +29,7 @@
         },
         {
             "src": "./screenshot2.png",
-            "sizes": "905x1080",
+            "sizes": "1080x905",
             "type": "image/png"
         }
     ],
@@ -57,5 +55,5 @@
         }
     ],
     "prefer_related_applications": false,
-    "iarc_rating_id": "e10" 
+    "iarc_rating_id": "e10"
 }
