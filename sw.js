@@ -1,37 +1,31 @@
-
-const CACHE_NAME = 'task-app-cache-v1';
-
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/icon.png',
-  '/screenshot1.png',
-  
+const cacheName = "task-app-v1";
+const assetsToCache = [
+    "./",
+    "./index.html",
+    "./icon-192.png",
+    "./icon-512.png",
+    "./beep-07.wav"
+    // أضف أي ملفات CSS أو JS خارجية هنا لو موجودة
 ];
 
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
-  );
+self.addEventListener("install", event => {
+    event.waitUntil(
+        caches.open(cacheName).then(cache => cache.addAll(assetsToCache))
+    );
+    self.skipWaiting();
+    console.log('Service Worker Installed');
 });
 
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key)))
-    )
-  );
+self.addEventListener("activate", event => {
+    event.waitUntil(
+        caches.keys().then(keys =>
+            Promise.all(keys.filter(key => key !== cacheName).map(key => caches.delete(key)))
+        )
+    );
 });
 
-self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request).then(response => response || fetch(event.request))
-  );
-});
-self.addEventListener('install', e => {
-  console.log('Service Worker Installed');
-});
-
-self.addEventListener('fetch', e => {
+self.addEventListener("fetch", event => {
+    event.respondWith(
+        caches.match(event.request).then(cachedRes => cachedRes || fetch(event.request))
+    );
 });
