@@ -31,7 +31,7 @@
         },
         {
             "src": "./screenshot2.png",
-            "sizes": "905x1080",
+            "sizes": "1080x905",
             "type": "image/png"
         }
     ],
